@@ -31,8 +31,8 @@ public class StartCommand extends BotCommand implements IBotCommand {
                         """
                      /start - prints the list of commands
                      /reset - removes the current conversation history and sets the system prompt to the default one
-                     /model <model_name> - prints the current model and allows to set a new one
-                     /prompt <model_name> - prints the current system prompt or sets a new one if specified
+                     /model <model name> - prints the current model and allows to set a new one
+                     /prompt <new system prompt> - prints the current system prompt or sets a new one if specified
                      /translate <language> - translates to a specified language
                     """
                 );
