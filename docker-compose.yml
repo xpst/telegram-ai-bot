@@ -1,0 +1,15 @@
+version: '3.8'
+
+name: java-open-ai
+
+services:
+  java-open-ai-service:
+    image: eclipse-temurin:22-alpine
+    container_name: java-open-ai-bot
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./src/main/resources/application.properties:/app/application.properties
+      - ./target/java-openai-0.0.1.jar:/app/java-openai-0.0.1.jar
+    command: java -cp /app:/app/* -jar /app/java-openai-0.0.1.jar
+
