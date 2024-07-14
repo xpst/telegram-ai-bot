@@ -4,7 +4,7 @@ OpenAI API Telegram bot on Java
 
 Based on:
 
-[Spring AI](https://docs.spring.io/spring-ai/reference/index.html)
+[Spring AI](https://docs.spring.io/spring-ai/reference/index.html), [Spring AI repo](https://github.com/spring-projects/spring-ai)
 
 [TelegramBots from Ruben Bermudez](https://github.com/rubenlagus/TelegramBots)
 
