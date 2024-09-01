@@ -10,6 +10,7 @@ services:
     working_dir: /app
     volumes:
       - ./src/main/resources/application.properties:/app/application.properties
+      - ./src/main/resources/logback-spring.xml:/app/logback-spring.xml
       - ./target/java-openai-0.0.1.jar:/app/java-openai-0.0.1.jar
-    command: java -cp /app:/app/* -jar /app/java-openai-0.0.1.jar
+    command: java -cp /app:/app/* -Dlogging.config=/app/logback-spring.xml -jar /app/java-openai-0.0.1.jar
 
