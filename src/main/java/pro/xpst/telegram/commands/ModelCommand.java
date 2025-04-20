@@ -41,8 +41,8 @@ public class ModelCommand extends BotCommand implements IBotCommand {
 
         if (0 == anArguments.length) {
             openAiTelegramBot.sendMessage(aMessage.getChatId(),
-                    "The current model is: " + openAiTelegramBot.getOpenAiService().getModel());
-            openAiTelegramBot.sendInlineKeyboardMarkup(aMessage.getChatId(), "Please specify a model", createButtons());
+                    "The current model is: " + openAiTelegramBot.getOpenAiService(aMessage.getChatId()).getModel());
+            openAiTelegramBot.sendInlineKeyboardMarkup(aMessage.getChatId(), "Please specify a model", createButtons(aMessage.getChatId()));
         } else if (anArguments.length > 1) {
             openAiTelegramBot.sendMessage(aMessage.getChatId(), aMessage.getFrom().getUserName() + ", please specify a model");
         } else {
@@ -57,15 +57,15 @@ public class ModelCommand extends BotCommand implements IBotCommand {
 
     private void changeModel(Long aChatId, String aModel) {
         LOGGER.debug("changeModel()");
-        openAiTelegramBot.getOpenAiService().seModel(aModel);
+        openAiTelegramBot.getOpenAiService(aChatId).setModel(aModel);
         openAiTelegramBot.sendMessage(aChatId,
-                "Done, current model is: " + openAiTelegramBot.getOpenAiService().getModel());
+                "Done, current model is: " + openAiTelegramBot.getOpenAiService(aChatId).getModel());
     }
 
-    private InlineKeyboardMarkup createButtons() {
+    private InlineKeyboardMarkup createButtons(Long aChatId) {
         LOGGER.debug("createButtons()");
 
-        List<InlineKeyboardButton> buttons = openAiTelegramBot.getOpenAiService().getModels()
+        List<InlineKeyboardButton> buttons = openAiTelegramBot.getOpenAiService(aChatId).getModels()
                 .stream()
                 .map(s ->
                         InlineKeyboardButton

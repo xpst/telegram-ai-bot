@@ -8,14 +8,16 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import pro.xpst.telegram.OpenAiTelegramBot;
 
-public class ResetCommand extends BotCommand implements IBotCommand {
+import java.util.stream.Collectors;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResetCommand.class);
+public class AdminCommand extends BotCommand implements IBotCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminCommand.class);
 
     private final OpenAiTelegramBot openAiTelegramBot;
 
-    public ResetCommand(OpenAiTelegramBot openAiTelegramBot) {
-        super("reset", "Removes the current conversation history");
+    public AdminCommand(OpenAiTelegramBot openAiTelegramBot) {
+        super("admin", "Get currents chats ids");
         this.openAiTelegramBot = openAiTelegramBot;
     }
 
@@ -27,7 +29,10 @@ public class ResetCommand extends BotCommand implements IBotCommand {
     @Override
     public void processMessage(TelegramClient aTelegramClient, Message aMessage, String[] anArguments) {
         LOGGER.debug("processMessage()");
-        openAiTelegramBot.getOpenAiService(aMessage.getChatId()).reset();
-        openAiTelegramBot.sendMessage(aMessage.getChatId(), "Done.");
+        openAiTelegramBot.sendMessage(aMessage.getChatId(),
+                "Chats ids: " + openAiTelegramBot.getChatsIds()
+                        .stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(", ")));
     }
 }

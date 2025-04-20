@@ -20,15 +20,17 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import pro.xpst.openai.OpenAiService;
+import pro.xpst.openai.OpenAiServiceFactory;
 import pro.xpst.telegram.commands.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Component("openAiTelegramBot")
-public class OpenAiTelegramBot extends CommandLongPollingTelegramBot {
-
+public class OpenAiTelegramBot extends CommandLongPollingTelegramBot implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAiTelegramBot.class);
 
     @Value("${pro.xpst.telegram.bot.users.allowed}")
@@ -36,28 +38,32 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot {
 
     @Getter
     private final String botToken;
-
-    @Getter
-    private final OpenAiService openAiService;
-
+    private final OpenAiServiceFactory openAiServiceFactory;
     private final ModelCommand modelCommand;
 
-    public OpenAiTelegramBot(@Value("${pro.xpst.telegram.bot.token}") String aBotToken,
-                             @Value("${pro.xpst.telegram.bot.username}") String aBotName,
-                             OpenAiService anOpenAiService) {
+    public OpenAiTelegramBot(@Value("${pro.xpst.telegram.bot.token}") String aBotToken, @Value("${pro.xpst.telegram.bot.username}") String aBotName, OpenAiServiceFactory openAiServiceFactory) {
         super(new OkHttpTelegramClient(aBotToken), true, () -> aBotName);
-        botToken = aBotToken;
+        this.botToken = aBotToken;
 
-        modelCommand = new ModelCommand(this);
+        this.modelCommand = new ModelCommand(this);
 
-        registerAll(
+        this.registerAll(
                 new ResetCommand(this),
                 new StartCommand(this),
                 new PromptCommand(this),
                 new TranslateCommand(this),
-                modelCommand);
-        setMenuButton();
-        this.openAiService = anOpenAiService;
+                this.modelCommand);
+        this.setMenuButton();
+        this.register(new AdminCommand(this));
+        this.openAiServiceFactory = openAiServiceFactory;
+    }
+
+    public OpenAiService getOpenAiService(Long aChatId) {
+        return this.openAiServiceFactory.getInstance(aChatId);
+    }
+
+    public Set<Long> getChatsIds() {
+        return this.openAiServiceFactory.getChatsIds();
     }
 
     @Override
@@ -93,26 +99,25 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot {
 
         LOGGER.debug("We've got a message: MessageId: {}, UserId: {}, ChatId: {}",
                 message.getMessageId(), message.getFrom().getId(), message.getChatId());
-
-        sendChatAction(message.getChatId().toString(), ActionType.TYPING.toString()); // Send typing action
-
+        this.sendChatAction(message.getChatId().toString(), ActionType.TYPING.toString());
         if (message.hasText()) {
-            sendMessage(anUpdate.getMessage().getChatId(), openAiService.generate(anUpdate.getMessage().getText()));
+            this.sendMessage(anUpdate.getMessage().getChatId(), this.getOpenAiService(message.getChatId()).generate(anUpdate.getMessage().getText()));
         }
     }
 
     @Override
     public boolean filter(Message aMessage) {
-        if (!isUserAllowed(aMessage)) {
+        if (!this.isUserAllowed(aMessage)) {
             return false;
+        } else {
+            LOGGER.debug("Got message: {} from User: {} ({})", new Object[]{aMessage.getText(), aMessage.getFrom().getUserName(), aMessage.getFrom().getId()});
+            return super.filter(aMessage);
         }
-        LOGGER.debug("Got message: {} from User: {} ({})", aMessage.getText(), aMessage.getFrom().getUserName(), aMessage.getFrom().getId());
-        return super.filter(aMessage);
     }
 
     private boolean isUserAllowed(Message aMessage) {
         Long userId = aMessage.getFrom().getId();
-        return allowedUsers == null || allowedUsers.isEmpty() || allowedUsers.contains(userId);
+        return this.allowedUsers == null || this.allowedUsers.isEmpty() || this.allowedUsers.contains(userId);
     }
 
     private void setMenuButton() {
@@ -144,14 +149,30 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot {
 
     public void sendMessage(Long aChatId, String aMessage) {
         LOGGER.debug("sendMessage()");
-        SendMessage snd = new SendMessage(aChatId.toString(), aMessage);
-        snd.enableMarkdown(true);
-        snd.setParseMode(ParseMode.MARKDOWN);
-        try {
-            this.telegramClient.execute(snd);
-        } catch (Exception ex) {
-            LOGGER.error("Error while sending a message: {}", aMessage, ex);
+        if (aMessage.length() > 4096) {
+            List<String> messageParts = new ArrayList<>();
+
+            int endIndex;
+            for (int startIndex = 0; startIndex < aMessage.length(); startIndex = endIndex) {
+                endIndex = Math.min(startIndex + 4096, aMessage.length());
+                messageParts.add(aMessage.substring(startIndex, endIndex));
+            }
+
+            for (String part : messageParts) {
+                this.sendMessage(aChatId, part);
+            }
+        } else {
+            SendMessage snd = new SendMessage(aChatId.toString(), aMessage);
+            snd.enableMarkdown(true);
+            snd.setParseMode(ParseMode.MARKDOWN);
+
+            try {
+                this.telegramClient.execute(snd);
+            } catch (Exception ex) {
+                LOGGER.error("Error while sending a message: {}", aMessage, ex);
+            }
         }
+
     }
 
     public void deleteMessage(Long aChatId, Integer aMessageId) {

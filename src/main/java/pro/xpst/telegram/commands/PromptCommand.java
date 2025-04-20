@@ -31,10 +31,10 @@ public class PromptCommand extends BotCommand implements IBotCommand {
         LOGGER.debug("processMessage()");
         if (0 == anArguments.length) {
             openAiTelegramBot.sendMessage(aMessage.getChatId(),
-                    "The current system prompt: " + openAiTelegramBot.getOpenAiService().getPrompt());
+                    "The current system prompt: " + openAiTelegramBot.getOpenAiService(aMessage.getChatId()).getPrompt());
         } else {
             String newPrompt = aMessage.getText().substring(("/" + COMMAND).length());
-            openAiTelegramBot.getOpenAiService().setSystemPrompt(newPrompt);
+            openAiTelegramBot.getOpenAiService(aMessage.getChatId()).setSystemPrompt(newPrompt);
             openAiTelegramBot.sendMessage(aMessage.getChatId(), "Done.");
         }
     }

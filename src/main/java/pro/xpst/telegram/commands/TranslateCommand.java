@@ -30,7 +30,7 @@ public class TranslateCommand extends BotCommand implements IBotCommand {
         if (anArguments.length != 1) {
             openAiTelegramBot.sendMessage(aMessage.getChatId(), aMessage.getFrom().getUserName() + ", please specify a language");
         } else {
-            openAiTelegramBot.getOpenAiService().translate(anArguments[0]);
+            openAiTelegramBot.getOpenAiService(aMessage.getChatId()).translate(anArguments[0]);
             openAiTelegramBot.sendMessage(aMessage.getChatId(), "Done.");
         }
     }
