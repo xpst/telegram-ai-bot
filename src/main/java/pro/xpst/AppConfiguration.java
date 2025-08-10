@@ -1,7 +1,7 @@
 package pro.xpst;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,13 +27,16 @@ public class AppConfiguration {
 
     @Bean
     public RestClientCustomizer restClientCustomizer() {
+
         return restClientBuilder -> restClientBuilder
                 .requestFactory(
-                        ClientHttpRequestFactories.get(
-                            ClientHttpRequestFactorySettings.DEFAULTS
-                                .withConnectTimeout(Duration.ofSeconds(60))
-                                .withReadTimeout(Duration.ofSeconds(60))
-                        )
+                        ClientHttpRequestFactoryBuilder
+                                .simple()
+                                .build(
+                                        ClientHttpRequestFactorySettings.defaults()
+                                                .withConnectTimeout(Duration.ofSeconds(60))
+                                                .withReadTimeout(Duration.ofSeconds(60))
+                                )
                 );
     }
 }

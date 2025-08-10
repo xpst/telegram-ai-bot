@@ -5,10 +5,9 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.CallAroundAdvisor;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +28,7 @@ public class OpenAiServiceImpl implements OpenAiService {
     private static final Duration DEFAULT_EXPIRATION_TIME = Duration.ofHours(1); // Fallback default if property is not set
 
     private final ChatClient chatClient;
-    private InMemoryChatMemory inMemoryChatMemory;
+    private MessageWindowChatMemory inMemoryChatMemory;
     private MessageChatMemoryAdvisor memoryAdvisor;
     @Setter
     private String systemPrompt;
@@ -46,10 +45,22 @@ public class OpenAiServiceImpl implements OpenAiService {
                         @Value("${pro.xpst.openai.conversation.expiration:60}") int expirationMinutes) {
         LOGGER.debug("OpenAiServiceImpl()");
         this.systemPrompt = DEFAULT_SYSTEM_PROMPT;
-        this.inMemoryChatMemory = new InMemoryChatMemory();
-        this.memoryAdvisor = new MessageChatMemoryAdvisor(this.inMemoryChatMemory);
-        this.chatClient = aBuilder.defaultSystem(this.systemPrompt).defaultAdvisors(new CallAroundAdvisor[]{new SimpleLoggerAdvisor()}).build();
-        this.options = OpenAiChatOptions.builder().model(aModel).build();
+        this.inMemoryChatMemory = MessageWindowChatMemory
+                .builder()
+                .maxMessages(100)
+                .build();
+        this.memoryAdvisor = MessageChatMemoryAdvisor
+                .builder(inMemoryChatMemory)
+                .build();
+        this.chatClient = aBuilder
+                .defaultSystem(this.systemPrompt)
+                .defaultAdvisors(new SimpleLoggerAdvisor())
+                .build();
+        this.options = OpenAiChatOptions
+                .builder()
+                .model(aModel)
+                .temperature(1.0)
+                .build();
 
         // Set conversation expiration time from properties or use default
         this.conversationExpirationTime = expirationMinutes > 0
@@ -74,7 +85,7 @@ public class OpenAiServiceImpl implements OpenAiService {
     public String generate(String aMessage) {
         LOGGER.debug("Generating a message");
 
-        // Check if conversation has expired
+        // Check if the conversation has expired
         Instant now = Instant.now();
         if (lastInteractionTime != null &&
             Duration.between(lastInteractionTime, now).compareTo(conversationExpirationTime) > 0) {
@@ -82,7 +93,14 @@ public class OpenAiServiceImpl implements OpenAiService {
             reset();
         }
 
-        String response = this.chatClient.prompt().options(this.options).advisors(new CallAroundAdvisor[]{this.memoryAdvisor}).system(this.systemPrompt).user(aMessage).call().content();
+        String response = this.chatClient
+                .prompt()
+                .options(this.options)
+                .advisors(this.memoryAdvisor)
+                .system(this.systemPrompt)
+                .user(aMessage)
+                .call()
+                .content();
 
         // Update last interaction time
         this.lastInteractionTime = Instant.now();
@@ -93,8 +111,10 @@ public class OpenAiServiceImpl implements OpenAiService {
 
     public void reset() {
         LOGGER.debug("reset()");
-        this.inMemoryChatMemory = new InMemoryChatMemory();
-        this.memoryAdvisor = new MessageChatMemoryAdvisor(this.inMemoryChatMemory);
+        this.inMemoryChatMemory = MessageWindowChatMemory.builder()
+                .maxMessages(100)
+                .build();
+        this.memoryAdvisor = MessageChatMemoryAdvisor.builder(inMemoryChatMemory).build();
         this.systemPrompt = DEFAULT_SYSTEM_PROMPT;
         this.lastInteractionTime = Instant.now();
     }
@@ -113,7 +133,11 @@ public class OpenAiServiceImpl implements OpenAiService {
     }
 
     public void setModel(String aModel) {
-        this.options = OpenAiChatOptions.builder().model(aModel).build();
+        this.options = OpenAiChatOptions
+                .builder()
+                .model(aModel)
+                .temperature(1.0)
+                .build();
     }
 
 }
