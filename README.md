@@ -24,7 +24,7 @@ A Java-based Telegram bot that integrates with OpenAI's API to provide conversat
 ## Features
 
 - Interact with OpenAI's language models through Telegram
-- Support for multiple OpenAI models (gpt-4o, gpt-4.1-nano, etc.)
+- Support for multiple OpenAI models (gpt-4o, gpt-5-nano, etc.)
 - Customizable system prompts
 - Conversation history management
 - Translation capabilities
@@ -60,7 +60,7 @@ spring.application.name=JavaOpenAI
 
 # OpenAI configuration
 spring.ai.openai.api-key=${OPENAI_API_KEY}
-spring.ai.openai.chat.options.model=gpt-4.1-nano
+spring.ai.openai.chat.options.model=gpt-5-nano
 
 # Telegram bot configuration
 pro.xpst.telegram.bot.username=${BOT_NAME}
@@ -76,8 +76,8 @@ pro.xpst.telegram.bot.users.allowed=123456789,987654321
 |--------|-------------|---------|
 | `server.port` | The port on which the application runs | 8191 |
 | `spring.ai.openai.api-key` | Your OpenAI API key | - |
-| `spring.ai.openai.chat.options.model` | The default OpenAI model to use | gpt-4.1-nano |
-| `pro.xpst.openai.models` | List of available models for selection | gpt-4.1,gpt-4o-mini,gpt-4.1-mini,gpt-4.1-nano,o4-mini |
+| `spring.ai.openai.chat.options.model` | The default OpenAI model to use | gpt-5-nano |
+| `pro.xpst.openai.models` | List of available models for selection | gpt-5,gpt-4o-mini,gpt-5-mini,gpt-5-nano,o4-mini |
 | `pro.xpst.telegram.bot.username` | Your Telegram bot username | - |
 | `pro.xpst.telegram.bot.token` | Your Telegram bot token | - |
 | `pro.xpst.telegram.bot.users.allowed` | List of allowed Telegram user IDs | - |
