@@ -57,7 +57,7 @@ public class ModelCommand extends BotCommand implements IBotCommand {
 
     private void changeModel(Long aChatId, String aModel) {
         LOGGER.debug("changeModel()");
-        openAiTelegramBot.getOpenAiService(aChatId).setModel(aModel);
+        openAiTelegramBot.getOpenAiServiceFactory().setModel(aChatId, aModel);
         openAiTelegramBot.sendMessage(aChatId,
                 "Done, current model is: " + openAiTelegramBot.getOpenAiService(aChatId).getModel());
     }
@@ -65,7 +65,7 @@ public class ModelCommand extends BotCommand implements IBotCommand {
     private InlineKeyboardMarkup createButtons(Long aChatId) {
         LOGGER.debug("createButtons()");
 
-        List<InlineKeyboardButton> buttons = openAiTelegramBot.getOpenAiService(aChatId).getModels()
+        List<InlineKeyboardButton> buttons = openAiTelegramBot.getOpenAiServiceFactory().getAllModels()
                 .stream()
                 .map(s ->
                         InlineKeyboardButton

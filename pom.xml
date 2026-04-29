@@ -17,7 +17,7 @@
         <java.version>22</java.version>
         <logback.version>1.5.18</logback.version>
         <slf4jlib.version>2.0.17</slf4jlib.version>
-        <spring-ai.version>1.0.1</spring-ai.version>
+        <spring-ai.version>1.1.5</spring-ai.version>
         <telegram.version>9.0.0</telegram.version>
     </properties>
     <dependencies>
@@ -73,6 +73,10 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-google-genai</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -106,20 +110,8 @@
     </build>
     <repositories>
         <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
 </project>

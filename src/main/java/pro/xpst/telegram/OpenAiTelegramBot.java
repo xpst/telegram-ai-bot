@@ -62,6 +62,10 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot implements 
         return this.openAiServiceFactory.getInstance(aChatId);
     }
 
+    public OpenAiServiceFactory getOpenAiServiceFactory() {
+        return this.openAiServiceFactory;
+    }
+
     public Set<Long> getChatsIds() {
         return this.openAiServiceFactory.getChatsIds();
     }

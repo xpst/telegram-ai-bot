@@ -1,4 +1,8 @@
 /target/
 /.idea/
+/.vscode/
 application.properties
 application - Copy.properties
+.env
+bot.log
+CLAUDE.md
