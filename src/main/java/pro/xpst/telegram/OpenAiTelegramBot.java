@@ -19,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import pro.xpst.openai.OpenAiService;
 import pro.xpst.openai.OpenAiServiceFactory;
 import pro.xpst.telegram.commands.*;
@@ -140,15 +141,32 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot implements 
         SendMessage sendMessage = new SendMessage(chatId.toString(), message);
 
         // Set the markup to the message
-        sendMessage.enableMarkdown(true);
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
 
         try {
             this.telegramClient.execute(sendMessage);
+        } catch (TelegramApiRequestException ex) {
+            if (isMarkdownParseError(ex)) {
+                LOGGER.warn("Markdown parse failed (chatId={}); resending as plain text. Reason: {}",
+                        chatId, ex.getApiResponse());
+                SendMessage plain = new SendMessage(chatId.toString(), message);
+                try {
+                    this.telegramClient.execute(plain);
+                } catch (Exception ex2) {
+                    LOGGER.error("Plain-text fallback also failed for chatId={}: {}", chatId, message, ex2);
+                }
+            } else {
+                LOGGER.error("Error while sending a message: {}", message, ex);
+            }
         } catch (TelegramApiException ex) {
             LOGGER.error("Error while sending an InlineKeyboardMarkup", ex);
 
         }
+    }
+
+    private static boolean isMarkdownParseError(TelegramApiRequestException ex) {
+        String resp = ex.getApiResponse();
+        return resp != null && resp.contains("can't parse entities");
     }
 
     public void sendMessage(Long aChatId, String aMessage) {
