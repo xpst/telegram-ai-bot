@@ -6,3 +6,5 @@ application - Copy.properties
 .env
 bot.log
 CLAUDE.md
+/.claude/
+maven-settings.xml
