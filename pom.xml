@@ -18,7 +18,7 @@
         <logback.version>1.5.18</logback.version>
         <slf4jlib.version>2.0.17</slf4jlib.version>
         <spring-ai.version>1.1.5</spring-ai.version>
-        <telegram.version>9.0.0</telegram.version>
+        <telegram.version>9.5.0</telegram.version>
     </properties>
     <dependencies>
         <dependency>
