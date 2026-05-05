@@ -190,7 +190,20 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot implements 
 
             try {
                 this.telegramClient.execute(snd);
-            } catch (Exception ex) {
+            } catch (TelegramApiRequestException ex) {
+                if (isMarkdownParseError(ex)) {
+                    LOGGER.warn("Markdown parse failed (chatId={}); resending as plain text. Reason: {}",
+                            aChatId, ex.getApiResponse());
+                    SendMessage plain = new SendMessage(aChatId.toString(), aMessage);
+                    try {
+                        this.telegramClient.execute(plain);
+                    } catch (Exception ex2) {
+                        LOGGER.error("Plain-text fallback also failed for chatId={}: {}", aChatId, aMessage, ex2);
+                    }
+                } else {
+                    LOGGER.error("Error while sending a message: {}", aMessage, ex);
+                }
+            } catch (TelegramApiException ex) {
                 LOGGER.error("Error while sending a message: {}", aMessage, ex);
             }
         }
