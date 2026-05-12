@@ -1,6 +1,6 @@
-# JavaOpenAI
+# telegram-ai-bot
 
-A Java-based Telegram bot that integrates with OpenAI's API to provide conversational AI capabilities. This bot allows users to interact with various OpenAI models, customize system prompts, and translate messages to different languages.
+A Java-based Telegram bot that integrates with OpenAI's and Google Gemini APIs to provide conversational AI capabilities. This bot allows users to interact with various models from both providers, customize system prompts, and translate messages to different languages.
 
 ## Table of Contents
 
@@ -59,7 +59,7 @@ The application can be configured through the `application.properties` file:
 ```properties
 # Server configuration
 server.port=8191
-spring.application.name=JavaOpenAI
+spring.application.name=telegram-ai-bot
 
 # OpenAI configuration
 spring.ai.openai.api-key=${OPENAI_API_KEY}
@@ -104,8 +104,8 @@ pro.xpst.telegram.bot.users.allowed=123456789,987654321
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/JavaOpenAI.git
-   cd JavaOpenAI
+   git clone https://github.com/xpst/telegram-ai-bot.git
+   cd telegram-ai-bot
    ```
 
 2. Set up environment variables or update the `application.properties` file with your API keys and tokens.
@@ -117,7 +117,7 @@ pro.xpst.telegram.bot.users.allowed=123456789,987654321
 
 4. Run the application:
    ```bash
-   java -jar target/java-openai-0.0.1.jar
+   java -jar target/telegram-ai-bot-0.0.1.jar
    ```
 
 ### Docker Deployment

@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from a repository -->
     </parent>
     <groupId>pro.xpst</groupId>
-    <artifactId>java-openai</artifactId>
+    <artifactId>telegram-ai-bot</artifactId>
     <version>0.0.1</version>
-    <name>JavaOpenAI</name>
-    <description>Java OpenAI Chat Telegram Bot</description>
+    <name>telegram-ai-bot</name>
+    <description>Telegram AI Chat Bot (OpenAI + Gemini)</description>
     <properties>
         <java.version>22</java.version>
         <logback.version>1.5.18</logback.version>

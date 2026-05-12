@@ -1,16 +1,15 @@
 version: '3.8'
 
-name: java-open-ai
+name: telegram-ai-bot
 
 services:
-  java-open-ai-service:
+  telegram-ai-bot-service:
     image: eclipse-temurin:22-alpine
-    container_name: java-open-ai-bot
+    container_name: telegram-ai-bot
     restart: always
     working_dir: /app
     volumes:
       - ./src/main/resources/application.properties:/app/application.properties
       - ./src/main/resources/logback-spring.xml:/app/logback-spring.xml
-      - ./target/java-openai-0.0.1.jar:/app/java-openai-0.0.1.jar
-    command: java -cp /app:/app/* -Dlogging.config=/app/logback-spring.xml -jar /app/java-openai-0.0.1.jar
-
+      - ./target/telegram-ai-bot-0.0.1.jar:/app/telegram-ai-bot-0.0.1.jar
+    command: java -cp /app:/app/* -Dlogging.config=/app/logback-spring.xml -jar /app/telegram-ai-bot-0.0.1.jar
