@@ -4,7 +4,7 @@ name: telegram-ai-bot
 
 services:
   telegram-ai-bot-service:
-    image: eclipse-temurin:22-alpine
+    image: eclipse-temurin:25-alpine
     container_name: telegram-ai-bot
     restart: always
     working_dir: /app

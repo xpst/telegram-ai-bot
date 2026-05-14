@@ -34,7 +34,7 @@ A Java-based Telegram bot that integrates with OpenAI's and Google Gemini APIs t
 
 ## Prerequisites
 
-- Java 17 or higher
+- Java 25 or higher
 - Maven
 - OpenAI API key
 - Google AI Studio API key (for Gemini models)

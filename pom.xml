@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.14</version>
         <relativePath/> <!-- lookup parent from a repository -->
     </parent>
     <groupId>pro.xpst</groupId>
@@ -14,9 +14,7 @@
     <name>telegram-ai-bot</name>
     <description>Telegram AI Chat Bot (OpenAI + Gemini)</description>
     <properties>
-        <java.version>22</java.version>
-        <logback.version>1.5.18</logback.version>
-        <slf4jlib.version>2.0.17</slf4jlib.version>
+        <java.version>25</java.version>
         <spring-ai.version>1.1.5</spring-ai.version>
         <telegram.version>9.5.0</telegram.version>
     </properties>
@@ -29,12 +27,10 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4jlib.version}</version>
         </dependency>
 
         <dependency>
@@ -94,6 +90,18 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
