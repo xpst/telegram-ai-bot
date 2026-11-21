@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <version>4.2.0</version>
         <relativePath/> <!-- lookup parent from a repository -->
     </parent>
     <groupId>pro.xpst</groupId>
@@ -15,8 +15,8 @@
     <description>Telegram AI Chat Bot (OpenAI + Gemini)</description>
     <properties>
         <java.version>25</java.version>
-        <spring-ai.version>1.1.5</spring-ai.version>
-        <telegram.version>9.5.0</telegram.version>
+        <spring-ai.version>2.1.0</spring-ai.version>
+        <telegram.version>10.3.0</telegram.version>
     </properties>
     <dependencies>
         <dependency>
@@ -47,6 +47,13 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-extensions</artifactId>
             <version>${telegram.version}</version>
+            <exclusions>
+                <!-- 10.x pulls in a Javalin/Jetty webhook server; this bot uses long polling only -->
+                <exclusion>
+                    <groupId>org.telegram</groupId>
+                    <artifactId>telegrambots-webhook</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -63,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>

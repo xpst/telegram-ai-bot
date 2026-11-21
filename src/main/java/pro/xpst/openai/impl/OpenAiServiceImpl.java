@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.client.advisor.api.MemoryAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -25,6 +26,8 @@ import java.util.Set;
 public class OpenAiServiceImpl implements OpenAiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAiServiceImpl.class);
     private static final String DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant.";
+    // Each instance owns the memory of exactly one chat, so a fixed id is enough (Spring AI 2.x requires one)
+    private static final String CONVERSATION_ID = "default";
     private static final PromptTemplate LANG = new PromptTemplate(" You are an interpreter.\n You will be provided with a text.\n You will translate it to {value}\n");
     private static final Duration DEFAULT_EXPIRATION_TIME = Duration.ofHours(1); // Fallback default if property is not set
 
@@ -96,8 +99,10 @@ public class OpenAiServiceImpl implements OpenAiService {
 
         String response = this.chatClient
                 .prompt()
-                .options(this.options)
-                .advisors(this.memoryAdvisor)
+                .options(this.options.mutate())
+                .advisors(a -> a
+                        .advisors(this.memoryAdvisor)
+                        .param(MemoryAdvisor.CONVERSATION_ID, CONVERSATION_ID))
                 .system(this.systemPrompt)
                 .user(aMessage)
                 .call()
