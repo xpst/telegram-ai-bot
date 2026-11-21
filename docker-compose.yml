@@ -12,4 +12,4 @@ services:
       - ./src/main/resources/application.properties:/app/application.properties
       - ./src/main/resources/logback-spring.xml:/app/logback-spring.xml
       - ./target/telegram-ai-bot-0.0.1.jar:/app/telegram-ai-bot-0.0.1.jar
-    command: java -cp /app:/app/* -Dlogging.config=/app/logback-spring.xml -jar /app/telegram-ai-bot-0.0.1.jar
+    command: java -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=32m -Xss512k -XX:+UseCompactObjectHeaders -cp /app:/app/* -Dlogging.config=/app/logback-spring.xml -jar /app/telegram-ai-bot-0.0.1.jar
