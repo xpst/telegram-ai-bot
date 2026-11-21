@@ -106,7 +106,24 @@ public class OpenAiTelegramBot extends CommandLongPollingTelegramBot implements 
                 message.getMessageId(), message.getFrom().getId(), message.getChatId());
         this.sendChatAction(message.getChatId().toString(), ActionType.TYPING.toString());
         if (message.hasText()) {
-            this.sendMessage(anUpdate.getMessage().getChatId(), this.getOpenAiService(message.getChatId()).generate(anUpdate.getMessage().getText()));
+            Long chatId = message.getChatId();
+            OpenAiService service = this.getOpenAiService(chatId);
+            String response;
+            try {
+                response = service.generate(message.getText());
+            } catch (RuntimeException ex) {
+                LOGGER.error("AI call failed (chatId={}, model={})", chatId, service.getModel(), ex);
+                this.sendMessage(chatId, "Sorry, the AI request failed (model: " + service.getModel()
+                        + "). Please try again later or pick another model with /model.");
+                return;
+            }
+            if (response == null || response.isBlank()) {
+                LOGGER.warn("AI returned an empty response (chatId={}, model={})", chatId, service.getModel());
+                this.sendMessage(chatId, "The model returned an empty answer (model: " + service.getModel()
+                        + "). Please rephrase or pick another model with /model.");
+                return;
+            }
+            this.sendMessage(chatId, response);
         }
     }
 
